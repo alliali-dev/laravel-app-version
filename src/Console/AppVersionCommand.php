@@ -2,6 +2,7 @@
 
 namespace AllialiDev\AppVersion\Console;
 
+use Carbon\Carbon;
 use Illuminate\Console\Attributes\{Description, Signature};
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -16,11 +17,12 @@ class AppVersionCommand extends Command
     public function handle()
     {
         $type = $this->argument('type');
+
         if (!in_array($type, ['major', 'minor', 'patch'])) {
             $this->error("Type invalide ! Choisissez entre : major, minor, patch.");
             return Command::FAILURE;
         }
-        // Le chemin du fichier
+
         $path = base_path('version.json');
 
         // Récupérer la version actuelle ou initialiser
@@ -29,6 +31,7 @@ class AppVersionCommand extends Command
             $currentVersion = $data['version'] ?? '1.0.0';
         } else {
             $currentVersion = '1.0.0';
+            $data = [];
         }
 
         // Séparer les composants SemVer (Major.Minor.Patch)
@@ -42,26 +45,35 @@ class AppVersionCommand extends Command
         $patch = (int)$matches[3];
 
         // Calcul de la nouvelle version
-        switch ($type) {
-            case 'major':
-                $major++;
-                $minor = 0;
-                $patch = 0;
-                break;
-            case 'minor':
-                $minor++;
-                $patch = 0;
-                break;
-            case 'patch':
-                $patch++;
-                break;
-        }
+        match ($type) {
+            'major' => [$major++, $minor = 0, $patch = 0],
+            'minor' => [$minor++, $patch = 0],
+            'patch' => $patch++,
+        };
 
         $newVersion = "{$major}.{$minor}.{$patch}";
+        $now = Carbon::now()->toDateTimeString();
 
-        // Enregistrer dans version.json
-        File::put($path, json_encode(['version' => $newVersion], JSON_PRETTY_PRINT));
-        $this->info("Version mise à jour avec succès : v{$newVersion}");
+        // Prépare les données
+        $history = $data['history'] ?? [];
+        $history[$newVersion] = $now;
+
+        $versionData = [
+            'version' => $newVersion,
+            'last_updated' => $now,
+            'history' => $history
+        ];
+
+        // Sauvegarde
+        File::put($path, json_encode($versionData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+        // Messages de succès
+        $this->info("✅ Version mise à jour avec succès : v{$newVersion}");
+        $this->info("📅 Date : {$now}");
+
+        $this->newLine();
+        $this->info('🎉 Opération terminée avec succès !');
+        $this->line('📝 Utilisez app_version() pour afficher la version.');
 
         return Command::SUCCESS;
     }
