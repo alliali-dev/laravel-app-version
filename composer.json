@@ -1,0 +1,31 @@
+{
+    "name": "alliali-dev/laravel-app-version",
+    "description": "Incrémente automatiquement la version d'une application Laravel via une commande Artisan.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["laravel", "version", "app", "artisan", "semver"],
+    "authors": [
+        {
+            "name": "Alliali Nogues",
+            "email": "alliali.dev@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "illuminate/support": "^11.0|^12.0|^13.0",
+        "illuminate/console": "^11.0|^12.0|^13.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "AllialiDev\\AppVersion\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AllialiDev\\AppVersion\\AppVersionServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable"
+}
