@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\File;
 class AppVersionCommand extends Command
 {
     /**
+     * Le nom de la commande
+     * @var string
+     */
+    protected $name = 'app:version';
+    /**
      * The name and signature of the console command.
      *
      * @var string
@@ -57,11 +62,21 @@ class AppVersionCommand extends Command
         $patch = (int)$matches[3];
 
         // Calcul de la nouvelle version
-        match ($type) {
-            'major' => [$major++, $minor = 0, $patch = 0],
-            'minor' => [$minor++, $patch = 0],
-            'patch' => $patch++,
-        };
+        switch ($type) {
+            case 'major':
+                $major++;
+                $minor = 0;
+                $patch = 0;
+                break;
+            case 'minor':
+                $minor++;
+                $patch = 0;
+                break;
+            case 'patch':
+                $patch++;
+                break;
+        }
+
 
         $newVersion = "{$major}.{$minor}.{$patch}";
         $now = Carbon::now()->toDateTimeString();
