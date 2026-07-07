@@ -3,14 +3,26 @@
 namespace AllialiDev\AppVersion\Console;
 
 use Carbon\Carbon;
-use Illuminate\Console\Attributes\{Description, Signature};
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
-#[Signature('app:version {type=patch : Le type d\'incrémentation (major, minor, patch)}')]
-#[Description('Commande pour générer la version actuelle de l\'application.')]
+
 class AppVersionCommand extends Command
 {
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'app:version {type=patch : Le type d\'incrémentation (major, minor, patch)}';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Commande pour générer la version actuelle de l\'application. Incrémente automatiquement la version de l\'application ';
+
     /**
      * Execute the console command.
      */
